@@ -23,6 +23,10 @@ import { Investment } from './investments/investment.entity';
         entities: [User, Investment],
         synchronize: true,
         logging: false,
+        // Force IPv4 — Render resolves some hostnames to IPv6 by default
+        extra: { family: 4 },
+        // Supabase requires SSL in production
+        ssl: { rejectUnauthorized: false },
       }),
       inject: [ConfigService],
     }),
