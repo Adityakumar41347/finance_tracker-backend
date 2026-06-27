@@ -20,79 +20,211 @@
 </p>
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# Finance Portfolio Tracker — Backend
 
-## Description
+NestJS REST API for the Finance Portfolio Tracker application. Handles authentication, investment CRUD, and portfolio summary calculations.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+**Live URL:** https://finance-tracker-backend-g1ga.onrender.com
 
-## Project setup
+**Frontend:** https://finance-tracker-lac-ten.vercel.app
+
+---
+
+## Tech Stack
+
+- Node.js + NestJS + TypeScript
+- PostgreSQL (Supabase)
+- TypeORM
+- JWT (passport-jwt)
+- bcryptjs
+- class-validator
+
+---
+
+## Project Structure
+src/
+
+├── auth/             # Register, login, JWT strategy, guard
+
+├── users/            # User entity and service
+
+├── investments/      # Investment CRUD with pagination and filtering
+
+├── portfolio/        # Portfolio summary endpoint
+
+└── common/
+
+├── guards/       # JwtAuthGuard
+
+└── decorators/   # @CurrentUser()
+
+
+---
+
+## Local Setup
+
+### Prerequisites
+
+- Node.js v18+
+- PostgreSQL database (local or Supabase)
+
+### Steps
 
 ```bash
-$ npm install
+git clone https://github.com/Adityakumar41347/finance_tracker-backend
+cd finance_tracker-backend
+cp .env.example .env
+# fill in your database credentials in .env
+npm install
+npm run start:dev
 ```
 
-## Compile and run the project
+API runs at **http://localhost:3001**
+
+---
+
+## Environment Variables
+
+Create a `.env` file in the root:
+DATABASE_HOST=aws-1-ap-southeast-2.pooler.supabase.com
+
+DATABASE_PORT=5432
+
+DATABASE_USERNAME=postgres.your-project-ref
+
+DATABASE_PASSWORD=your-password
+
+DATABASE_NAME=postgres
+
+JWT_SECRET=your-super-secret-jwt-key
+
+JWT_EXPIRY=7d
+
+PORT=3001
+### Auth
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/register` | Register a new user |
+| POST | `/auth/login` | Login and get JWT token |
+
+**Register request body:**
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+**Login request body:**
+```json
+{
+  "email": "john@example.com",
+  "password": "password123"
+}
+```
+
+**Response (both):**
+```json
+{
+  "user": { "id": "uuid", "name": "John Doe", "email": "john@example.com" },
+  "accessToken": "<jwt>"
+}
+```
+
+---
+
+### Investments
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/investments` | Create investment |
+| GET | `/investments` | Get all investments (paginated) |
+| GET | `/investments/:id` | Get investment by ID |
+| PUT | `/investments/:id` | Update investment |
+| DELETE | `/investments/:id` | Delete investment |
+
+**GET `/investments` query params:**
+
+| Param | Type | Description |
+|-------|------|-------------|
+| `page` | number | Page number (default: 1) |
+| `limit` | number | Items per page (default: 10) |
+| `type` | string | Filter by investment type |
+| `search` | string | Search by name |
+
+**Create/Update request body:**
+```json
+{
+  "investmentName": "HDFC Flexi Cap Fund",
+  "investmentType": "Mutual Fund",
+  "investedAmount": 10000,
+  "currentValue": 12500,
+  "purchaseDate": "2026-06-01"
+}
+```
+
+Valid `investmentType` values: `Mutual Fund`, `Stock`, `ETF`, `Bond`, `Real Estate`, `Cryptocurrency`, `Fixed Deposit`, `Gold`, `Other`
+
+---
+
+### Portfolio
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/portfolio/summary` | Get portfolio summary |
+
+**Response:**
+```json
+{
+  "totalInvested": 50000,
+  "currentValue": 62000,
+  "profit": 12000,
+  "profitPercentage": 24,
+  "totalInvestments": 3,
+  "breakdown": [
+    {
+      "type": "Mutual Fund",
+      "investedAmount": 30000,
+      "currentValue": 37000,
+      "profit": 7000,
+      "profitPercentage": 23.33,
+      "count": 2
+    }
+  ]
+}
+```
+
+---
+
+## Available Scripts
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run start:dev   # Development with hot-reload
+npm run build       # Compile TypeScript
+npm run start:prod  # Run compiled build
+npm test            # Run unit tests
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+## Deployment (Render)
 
-# e2e tests
-$ npm run test:e2e
+1. Push this repo to GitHub
+2. Go to [render.com](https://render.com) → New → Web Service
+3. Connect this repo and set:
 
-# test coverage
-$ npm run test:cov
-```
+| Setting | Value |
+|---------|-------|
+| Build Command | `npm install && npm run build` |
+| Start Command | `node dist/main` |
 
-## Deployment
+4. Add all environment variables from the section above
+5. Click Deploy
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+---
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Frontend Repo
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
-
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
-
-## Resources
-
-Check out a few resources that may come in handy when working with NestJS:
-
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
-
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+https://github.com/Adityakumar41347/finance-tracker
